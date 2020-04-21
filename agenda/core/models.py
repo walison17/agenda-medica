@@ -45,7 +45,7 @@ class Agenda(models.Model):
         unique_together = ['medico', 'dia']
 
     def __str__(self):
-        return f'médico: {self.medico}, data: {self.dia}'
+        return f'{self.medico} - {self.dia.strftime("%d/%m/%Y")}'
 
 
 class AgendaHora(models.Model):

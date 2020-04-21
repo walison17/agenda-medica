@@ -1,9 +1,14 @@
-from rest_framework import generics, filters
+from rest_framework import generics, filters, mixins, viewsets
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Medico, Especialidade, Agenda
-from .serializers import MedicoSerializer, EspecialidadeSerializer, AgendaSerializer
+from .models import Medico, Especialidade, Agenda, Consulta
+from .serializers import (
+    MedicoSerializer,
+    EspecialidadeSerializer,
+    AgendaSerializer,
+    ConsultaSerializer
+)
 from .filters import MedicoFilter
 
 
@@ -28,3 +33,19 @@ class MedicoList(generics.ListAPIView):
 class AgendaList(generics.ListAPIView):
     queryset = Agenda.objects.all()
     serializer_class = AgendaSerializer
+
+
+class CreateListDestroyViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
+
+
+class ConsultaViewSet(CreateListDestroyViewSet):
+    serializer_class = ConsultaSerializer
+
+    def get_queryset(self):
+        return Consulta.objects.filter(paciente=self.request.user)
