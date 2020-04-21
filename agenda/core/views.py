@@ -2,8 +2,8 @@ from rest_framework import generics, filters
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Medico, Especialidade
-from .serializers import MedicoSerializer, EspecialidadeSerializer
+from .models import Medico, Especialidade, Agenda
+from .serializers import MedicoSerializer, EspecialidadeSerializer, AgendaSerializer
 from .filters import MedicoFilter
 
 
@@ -23,3 +23,8 @@ class MedicoList(generics.ListAPIView):
     ]
     search_fields = ['nome']
     filterset_class = MedicoFilter
+
+
+class AgendaList(generics.ListAPIView):
+    queryset = Agenda.objects.all()
+    serializer_class = AgendaSerializer

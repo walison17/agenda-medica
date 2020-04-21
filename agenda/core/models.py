@@ -49,7 +49,7 @@ class Agenda(models.Model):
 
 
 class AgendaHora(models.Model):
-    agenda = models.ForeignKey(Agenda, on_delete=models.PROTECT)
+    agenda = models.ForeignKey(Agenda, related_name='horarios', on_delete=models.PROTECT)
     hora = models.TimeField()
 
     class Meta:
