@@ -16,7 +16,7 @@ class Especialidade(models.Model):
 
 class Medico(models.Model):
     nome = models.CharField(max_length=128)
-    crm = models.CharField(max_length=50, unique=True)
+    crm = models.IntegerField(unique=True)
     email = models.EmailField(blank=True)
     telefone = models.CharField(max_length=11, blank=True)
     especialidade = models.ForeignKey(
