@@ -17,8 +17,8 @@ class Especialidade(models.Model):
 class Medico(models.Model):
     nome = models.CharField(max_length=128)
     crm = models.CharField(max_length=50, unique=True)
-    email = models.EmailField()
-    telefone = models.CharField(max_length=11)
+    email = models.EmailField(blank=True)
+    telefone = models.CharField(max_length=11, blank=True)
     especialidade = models.ForeignKey(
         Especialidade, related_name='medicos', on_delete=models.PROTECT
     )
@@ -58,12 +58,3 @@ class AgendaHora(models.Model):
 
     def __str__(self):
         return self.hora.strftime('%H:%M')
-
-
-class Consulta(models.Model):
-    data_agendamento = models.DateTimeField('data do agendamento', auto_now_add=True)
-    dia = models.DateField()
-    horario = models.TimeField('horário')
-    medico = models.ForeignKey(
-        Medico, related_name='consultas', on_delete=models.PROTECT
-    )
