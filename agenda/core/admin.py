@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Medico, Especialidade, Agenda, AgendaHora
+from .models import (
+    Agenda,
+    AgendaHora,
+    Consulta,
+    Especialidade,
+    Medico
+)
 
 
 @admin.register(Medico)
@@ -17,6 +23,12 @@ class AgendaHoraInline(admin.StackedInline):
 class AgendaAdmin(admin.ModelAdmin):
     list_display = ['medico', 'dia']
     inlines = [AgendaHoraInline]
+
+
+@admin.register(Consulta)
+class ConsultaAdmin(admin.ModelAdmin):
+    list_display = ['dia', 'horario', 'paciente', 'medico']
+    list_filter = ['dia', 'horario', 'paciente', 'medico']
 
 
 admin.site.register(Especialidade)

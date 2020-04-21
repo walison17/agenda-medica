@@ -2,6 +2,7 @@ from datetime import date
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 
 class Especialidade(models.Model):
@@ -58,3 +59,29 @@ class AgendaHora(models.Model):
 
     def __str__(self):
         return self.hora.strftime('%H:%M')
+
+
+class Consulta(models.Model):
+    dia = models.DateField()
+    horario = models.TimeField('horário')
+    data_agendamento = models.DateTimeField('data do agendamento', auto_now_add=True)
+    medico = models.ForeignKey(
+        Medico,
+        related_name='consultas',
+        on_delete=models.PROTECT
+    )
+    paciente = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='consultas',
+        on_delete=models.PROTECT
+    )
+
+    class Meta:
+        ordering = ['dia', 'horario']
+        unique_together = ['dia', 'horario', 'paciente']
+
+    def __str__(self):
+        return (
+            f"médico: {self.medico}, dia: {self.dia.strftime('%d/%m/%Y')} "
+            f"às {self.horario.strftime('%H:%M')}"
+        )
