@@ -15,7 +15,7 @@ class AgendaQuerySet(models.QuerySet):
 
         horarios_disponiveis = (
             AgendaHora
-            .objects
+            .disponiveis
             .filter(
                 disponivel=True,
                 hora__gte=Case(
@@ -41,10 +41,9 @@ class AgendaDisponivelManager(models.Manager):
 
         horarios_disponiveis = (
             AgendaHora
-            .objects
+            .disponiveis
             .filter(
                 agenda=OuterRef('pk'),
-                disponivel=True,
                 hora__gte=Case(
                     When(
                         Q(agenda__dia=hoje), then=Value(hora)

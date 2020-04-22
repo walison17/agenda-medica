@@ -6,6 +6,8 @@ from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
+from model_utils.managers import QueryManager
+
 from .managers import AgendaDisponivelManager, AgendaQuerySet
 
 
@@ -85,6 +87,9 @@ class AgendaHora(models.Model):
     agenda = models.ForeignKey(Agenda, related_name='horarios', on_delete=models.PROTECT)
     hora = models.TimeField()
     disponivel = models.BooleanField('disponível', default=True, editable=False)
+
+    objects = models.Manager()
+    disponiveis = QueryManager(disponivel=True)
 
     class Meta:
         verbose_name = 'Horário'
