@@ -1,7 +1,5 @@
 from datetime import date
 
-from django.core.exceptions import ValidationError
-
 from rest_framework import serializers
 
 from .models import Especialidade, Medico, Agenda, Consulta
@@ -86,9 +84,12 @@ class ConsultaSerializer(serializers.ModelSerializer):
             )
             .exists()
         ):
-            raise ValidationError(
+            raise serializers.ValidationError(
                 'Paciente já possui uma consulta marcada para esse dia e horário'
             )
+
+        if not agenda.horarios.filter(disponivel=True, hora=horario).exists():
+            raise serializers.ValidationError({'horario': 'Horário indisponível'})
 
         return data
 
