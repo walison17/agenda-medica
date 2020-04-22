@@ -3,6 +3,8 @@ from datetime import date
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from .managers import AgendaDisponivelManager, AgendaQuerySet
 
@@ -91,3 +93,14 @@ class AgendaHora(models.Model):
 
     def __str__(self):
         return self.hora.strftime('%H:%M')
+
+
+@receiver(post_save, sender=Consulta)
+def indisponibilizar_horario(sender, instance, created, **kwargs):
+    if created:
+        (
+            AgendaHora
+            .objects
+            .filter(agenda__medico=instance.medico, agenda__dia=instance.dia, hora=instance.horario)
+            .update(disponivel=False)
+        )

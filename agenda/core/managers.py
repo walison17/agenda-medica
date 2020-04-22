@@ -8,46 +8,27 @@ from django.db.models import (
 
 class AgendaQuerySet(models.QuerySet):
     def prefetch_horarios_disponiveis(self):
-        from .models import Consulta, AgendaHora
+        from .models import AgendaHora
 
-        consultas = (
-            Consulta
-            .objects
-            .filter(
-                dia=OuterRef('agenda__dia'),
-                medico=OuterRef('agenda__medico')
-            )
-            .values('horario')
-        )
-        horarios = (
+        horarios_disponiveis = (
             AgendaHora
             .objects
-            .exclude(hora__in=Subquery(consultas))
+            .filter(disponivel=True)
         )
 
         return self.prefetch_related(
-            Prefetch('horarios', queryset=horarios, to_attr='horarios_disponiveis')
+            Prefetch('horarios', queryset=horarios_disponiveis, to_attr='horarios_disponiveis')
         )
 
 
 class AgendaDisponivelManager(models.Manager):
     def get_queryset(self):
-        from .models import Consulta, AgendaHora
+        from .models import AgendaHora
 
-        consultas = (
-            Consulta
-            .objects
-            .filter(
-                dia=OuterRef('agenda__dia'),
-                medico=OuterRef('agenda__medico')
-            )
-            .values('horario')
-        )
         horarios = (
             AgendaHora
             .objects
-            .filter(agenda=OuterRef('pk'))
-            .exclude(hora__in=Subquery(consultas))
+            .filter(agenda=OuterRef('pk'), disponivel=True)
         )
 
         return super().get_queryset().filter(dia__gte=date.today()).filter(Exists(horarios))
