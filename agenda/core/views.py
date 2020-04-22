@@ -9,7 +9,7 @@ from .serializers import (
     AgendaSerializer,
     ConsultaSerializer
 )
-from .filters import MedicoFilter
+from .filters import MedicoFilter, AgendaFilter
 
 
 class EspecialidadeList(generics.ListAPIView):
@@ -33,6 +33,8 @@ class MedicoList(generics.ListAPIView):
 class AgendaList(generics.ListAPIView):
     queryset = Agenda.disponivel.prefetch_horarios_disponiveis()
     serializer_class = AgendaSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = AgendaFilter
 
 
 class CreateListDestroyViewSet(
