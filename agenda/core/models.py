@@ -3,7 +3,7 @@ from datetime import date
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from .managers import AgendaDisponivelManager, AgendaQuerySet
@@ -96,7 +96,7 @@ class AgendaHora(models.Model):
 
 
 @receiver(post_save, sender=Consulta)
-def indisponibilizar_horario(sender, instance, created, **kwargs):
+def marcar_horario_como_indisponivel(sender, instance, created, **kwargs):
     if created:
         (
             AgendaHora
@@ -104,3 +104,13 @@ def indisponibilizar_horario(sender, instance, created, **kwargs):
             .filter(agenda__medico=instance.medico, agenda__dia=instance.dia, hora=instance.horario)
             .update(disponivel=False)
         )
+
+
+@receiver(post_delete, sender=Consulta)
+def marcar_horario_como_disponivel(sender, instance, **kwargs):
+    (
+        AgendaHora
+        .objects
+        .filter(agenda__medico=instance.medico, agenda__dia=instance.dia, hora=instance.horario)
+        .update(disponivel=True)
+    )
