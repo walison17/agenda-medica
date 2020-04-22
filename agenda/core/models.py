@@ -4,6 +4,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
+from .managers import AgendaDisponivelManager, AgendaQuerySet
+
 
 class Especialidade(models.Model):
     nome = models.CharField(max_length=64, unique=True)
@@ -31,36 +33,6 @@ class Medico(models.Model):
         return self.nome
 
 
-def validate_date(value):
-    if value < date.today():
-        raise ValidationError('Não é possível criar uma agenda para uma data retroativa.')
-
-
-class Agenda(models.Model):
-    medico = models.ForeignKey(Medico, related_name='agendas', on_delete=models.PROTECT)
-    dia = models.DateField(validators=[validate_date])
-
-    class Meta:
-        ordering = ['dia']
-        unique_together = ['medico', 'dia']
-
-    def __str__(self):
-        return f'{self.medico} - {self.dia.strftime("%d/%m/%Y")}'
-
-
-class AgendaHora(models.Model):
-    agenda = models.ForeignKey(Agenda, related_name='horarios', on_delete=models.PROTECT)
-    hora = models.TimeField()
-
-    class Meta:
-        verbose_name = 'Horário'
-        ordering = ['hora']
-        unique_together = ['agenda', 'hora']
-
-    def __str__(self):
-        return self.hora.strftime('%H:%M')
-
-
 class Consulta(models.Model):
     dia = models.DateField()
     horario = models.TimeField('horário')
@@ -85,3 +57,36 @@ class Consulta(models.Model):
             f"médico: {self.medico}, dia: {self.dia.strftime('%d/%m/%Y')} "
             f"às {self.horario.strftime('%H:%M')}"
         )
+
+
+def validate_date(value):
+    if value < date.today():
+        raise ValidationError('Não é possível criar uma agenda para uma data retroativa.')
+
+
+class Agenda(models.Model):
+    medico = models.ForeignKey(Medico, related_name='agendas', on_delete=models.PROTECT)
+    dia = models.DateField(validators=[validate_date])
+
+    objects = models.Manager()
+    disponivel = AgendaDisponivelManager.from_queryset(AgendaQuerySet)()
+
+    class Meta:
+        ordering = ['dia']
+        unique_together = ['medico', 'dia']
+
+    def __str__(self):
+        return f'{self.medico} - {self.dia.strftime("%d/%m/%Y")}'
+
+
+class AgendaHora(models.Model):
+    agenda = models.ForeignKey(Agenda, related_name='horarios', on_delete=models.PROTECT)
+    hora = models.TimeField()
+
+    class Meta:
+        verbose_name = 'Horário'
+        ordering = ['hora']
+        unique_together = ['agenda', 'hora']
+
+    def __str__(self):
+        return self.hora.strftime('%H:%M')

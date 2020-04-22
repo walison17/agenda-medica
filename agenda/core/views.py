@@ -31,7 +31,7 @@ class MedicoList(generics.ListAPIView):
 
 
 class AgendaList(generics.ListAPIView):
-    queryset = Agenda.objects.all()
+    queryset = Agenda.disponivel.prefetch_horarios_disponiveis()
     serializer_class = AgendaSerializer
 
 

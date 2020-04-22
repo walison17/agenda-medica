@@ -28,7 +28,7 @@ class MedicoSerializer(serializers.ModelSerializer):
 
 class AgendaSerializer(serializers.ModelSerializer):
     medico = MedicoSerializer()
-    horarios = serializers.StringRelatedField(many=True)
+    horarios = serializers.StringRelatedField(many=True, source='horarios_disponiveis')
 
     class Meta:
         model = Agenda
