@@ -2,8 +2,7 @@ from datetime import date
 
 from django.db import models
 from django.db.models import (
-    Prefetch, OuterRef, Subquery,
-    Case, When, Value, Q, Exists, F
+    Prefetch, OuterRef, Subquery, Exists,
 )
 
 
@@ -51,4 +50,4 @@ class AgendaDisponivelManager(models.Manager):
             .exclude(hora__in=Subquery(consultas))
         )
 
-        return super().get_queryset().filter(dia__gte=date.today()).filter(Exists(horarios)
+        return super().get_queryset().filter(dia__gte=date.today()).filter(Exists(horarios))
