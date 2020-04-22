@@ -7,7 +7,7 @@ from django.db.models import (
 
 
 class AgendaQuerySet(models.QuerySet):
-    def prefetch_horarios_disponiveis(self):
+    def carregar_apenas_horarios_disponiveis(self):
         from .models import AgendaHora
 
         hoje = date.today()

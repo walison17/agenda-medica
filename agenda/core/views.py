@@ -31,7 +31,7 @@ class MedicoList(generics.ListAPIView):
 
 
 class AgendaList(generics.ListAPIView):
-    queryset = Agenda.disponivel.prefetch_horarios_disponiveis()
+    queryset = Agenda.disponiveis.carregar_apenas_horarios_disponiveis()
     serializer_class = AgendaSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = AgendaFilter

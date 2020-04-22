@@ -73,7 +73,7 @@ class Agenda(models.Model):
     dia = models.DateField(validators=[validate_date])
 
     objects = models.Manager()
-    disponivel = AgendaDisponivelManager.from_queryset(AgendaQuerySet)()
+    disponiveis = AgendaDisponivelManager.from_queryset(AgendaQuerySet)()
 
     class Meta:
         ordering = ['dia']
