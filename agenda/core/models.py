@@ -8,7 +8,7 @@ from django.dispatch import receiver
 
 from model_utils.managers import QueryManager
 
-from .managers import AgendaDisponivelManager
+from .managers import AgendaDisponivelManager, AgendaQuerySet
 
 
 class Especialidade(models.Model):
@@ -73,7 +73,7 @@ class Agenda(models.Model):
     dia = models.DateField(validators=[validate_date])
 
     objects = models.Manager()
-    disponiveis = AgendaDisponivelManager()
+    disponiveis = AgendaDisponivelManager.from_queryset(AgendaQuerySet)()
 
     class Meta:
         ordering = ['dia']
