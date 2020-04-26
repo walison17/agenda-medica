@@ -52,5 +52,5 @@ class AgendaDisponivelManager(models.Manager):
             )
         )
 
-        qs = super().get_queryset()
+        qs = AgendaQuerySet(self.model, using=self._db)
         return qs.filter(dia__gte=hoje).filter(Exists(horarios_disponiveis))
