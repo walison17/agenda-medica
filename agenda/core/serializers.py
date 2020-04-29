@@ -38,11 +38,8 @@ class AgendaSerializer(serializers.ModelSerializer):
         ]
 
 
-class CurrentUserDefault:
-    requires_context = True
-
-    def __call__(self, serializer_field):
-        return serializer_field.context['request'].user
+PACIENTE_COM_CONSULTA_MARCADA_MSG = 'Paciente já possui uma consulta marcada para esse dia e horário'
+HORARIO_INDISPONIVEL_MSG = 'Horário indisponível'
 
 
 class ConsultaSerializer(serializers.ModelSerializer):
@@ -52,7 +49,7 @@ class ConsultaSerializer(serializers.ModelSerializer):
         label='agenda'
     )
     medico = MedicoSerializer(read_only=True)
-    paciente = serializers.HiddenField(default=CurrentUserDefault())
+    paciente = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Consulta
@@ -74,6 +71,8 @@ class ConsultaSerializer(serializers.ModelSerializer):
         agenda = data['agenda_id']
         horario = data['horario']
 
+        print(data['paciente'])
+
         if (
             Consulta
             .objects
@@ -84,12 +83,10 @@ class ConsultaSerializer(serializers.ModelSerializer):
             )
             .exists()
         ):
-            raise serializers.ValidationError(
-                'Paciente já possui uma consulta marcada para esse dia e horário'
-            )
+            raise serializers.ValidationError(PACIENTE_COM_CONSULTA_MARCADA_MSG)
 
         if not agenda.horarios.filter(disponivel=True, hora=horario).exists():
-            raise serializers.ValidationError({'horario': 'Horário indisponível'})
+            raise serializers.ValidationError({'horario': HORARIO_INDISPONIVEL_MSG})
 
         return data
 

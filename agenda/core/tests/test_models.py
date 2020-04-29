@@ -8,23 +8,6 @@ from pytest_django.asserts import assertNumQueries, assertQuerysetEqual
 from ..models import Agenda
 
 
-@pytest.fixture
-def horario():
-    return baker.make('core.AgendaHora', hora='9:00')
-
-
-@pytest.fixture
-def consulta(horario):
-    agenda = horario.agenda
-
-    return baker.make(
-        'core.Consulta',
-        medico=agenda.medico,
-        dia=agenda.dia,
-        horario=horario.hora
-    )
-
-
 @pytest.mark.django_db
 class TestAgendaDisponivelManager:
     def test_nao_deve_retornar_agendas_sem_horarios_cadastrados(self):
@@ -111,9 +94,8 @@ class TestAgendaDisponivelManager:
 
             agenda = agendas[0]
             assert hasattr(agenda, 'horarios_disponiveis')
-
-            assertQuerysetEqual(
-                agenda.horarios_disponiveis, ['10:30'], lambda h: h.hora.strftime('%H:%M')
+            assert all(
+                [a.hora.strftime('%H:%M') == b for a, b in zip(agenda.horarios_disponiveis, ['10:30'])]
             )
 
 
