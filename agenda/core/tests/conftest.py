@@ -9,6 +9,11 @@ def paciente(django_user_model):
 
 
 @pytest.fixture
+def paciente2(django_user_model):
+    return baker.make(django_user_model)
+
+
+@pytest.fixture
 def horario():
     return baker.make('core.AgendaHora', hora='9:00')
 
