@@ -18,11 +18,6 @@ def req(rf, paciente):
 
 
 @pytest.fixture
-def paciente2(django_user_model):
-    return baker.make(django_user_model)
-
-
-@pytest.fixture
 def medico_dict(consulta):
     medico = consulta.medico
     especialidade = medico.especialidade
