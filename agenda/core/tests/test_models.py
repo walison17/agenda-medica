@@ -1,11 +1,12 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from unittest import mock
 
+from django.core.validators import ValidationError
 import pytest
 from model_bakery import baker
 from pytest_django.asserts import assertNumQueries, assertQuerysetEqual
 
-from ..models import Agenda
+from ..models import Agenda, validate_date
 
 
 @pytest.mark.django_db
@@ -118,3 +119,11 @@ def test_marcar_horario_como_disponivel(consulta, horario):
 
     horario.refresh_from_db()
     assert horario.disponivel
+
+
+def test_validar_dia():
+    ontem = date.today() - timedelta(days=1)
+
+    with pytest.raises(ValidationError) as err:
+        validate_date(ontem)
+        assert str(err) == 'Não é possível criar uma agenda para uma data retroativa'

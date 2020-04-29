@@ -71,8 +71,6 @@ class ConsultaSerializer(serializers.ModelSerializer):
         agenda = data['agenda_id']
         horario = data['horario']
 
-        print(data['paciente'])
-
         if (
             Consulta
             .objects
@@ -85,7 +83,12 @@ class ConsultaSerializer(serializers.ModelSerializer):
         ):
             raise serializers.ValidationError(PACIENTE_COM_CONSULTA_MARCADA_MSG)
 
-        if not agenda.horarios.filter(disponivel=True, hora=horario).exists():
+        if not (
+            agenda
+            .horarios
+            .filter(disponivel=True, hora=horario)
+            .exists()
+        ):
             raise serializers.ValidationError({'horario': HORARIO_INDISPONIVEL_MSG})
 
         return data
