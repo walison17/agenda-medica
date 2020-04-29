@@ -8,6 +8,23 @@ from pytest_django.asserts import assertNumQueries, assertQuerysetEqual
 from ..models import Agenda
 
 
+@pytest.fixture
+def horario():
+    return baker.make('core.AgendaHora', hora='9:00')
+
+
+@pytest.fixture
+def consulta(horario):
+    agenda = horario.agenda
+
+    return baker.make(
+        'core.Consulta',
+        medico=agenda.medico,
+        dia=agenda.dia,
+        horario=horario.hora
+    )
+
+
 @pytest.mark.django_db
 class TestAgendaDisponivelManager:
     def test_nao_deve_retornar_agendas_sem_horarios_cadastrados(self):
@@ -98,3 +115,24 @@ class TestAgendaDisponivelManager:
             assertQuerysetEqual(
                 agenda.horarios_disponiveis, ['10:30'], lambda h: h.hora.strftime('%H:%M')
             )
+
+
+@pytest.mark.django_db
+def test_marcar_horario_como_indisponivel(consulta, horario):
+    """
+    Deve marcar o horário como indisponível quando a consulta for marcada
+    """
+    horario.refresh_from_db()
+    assert not horario.disponivel
+
+
+@pytest.mark.django_db
+def test_marcar_horario_como_disponivel(consulta, horario):
+    """
+    Deve marcar o horário como disponível quando a consulta for desmarcada (deletada)
+    """
+    # Desmarca consulta
+    consulta.delete()
+
+    horario.refresh_from_db()
+    assert horario.disponivel
