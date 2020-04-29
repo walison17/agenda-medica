@@ -15,7 +15,6 @@ class AgendaQuerySet(models.QuerySet):
             AgendaHora
             .disponiveis
             .filter(
-                disponivel=True,
                 hora__gte=Case(
                     When(
                         Q(agenda__dia=hoje), then=Value(hora)
